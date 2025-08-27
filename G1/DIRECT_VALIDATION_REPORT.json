@@ -1,0 +1,178 @@
+{
+  "validation_summary": {
+    "total_tests": 11,
+    "passed_tests": 0,
+    "success_rate": 0.0
+  },
+  "authenticity_analysis": {
+    "total_responses": 10,
+    "authentic_responses": 0,
+    "average_length": 56,
+    "unique_content": true,
+    "persona_appropriate": 0
+  },
+  "persona_responses": {
+    "requirement-concierge": {
+      "query": "Analyze this requirement: Build a simple calculator app with basic arithmetic operations",
+      "response": "Error processing request: All connection attempts failed",
+      "execution_time": 0.023176193237304688,
+      "timestamp": "2025-08-27T19:29:50.138650"
+    },
+    "workflow-designer": {
+      "query": "Design an optimal development workflow for a small web application project",
+      "response": "Error processing request: All connection attempts failed",
+      "execution_time": 0.013152599334716797,
+      "timestamp": "2025-08-27T19:29:51.170734"
+    },
+    "developer": {
+      "query": "Implement a JavaScript function to validate email addresses",
+      "response": "Error processing request: All connection attempts failed",
+      "execution_time": 0.012781620025634766,
+      "timestamp": "2025-08-27T19:29:52.198029"
+    },
+    "tester": {
+      "query": "Create test cases for a user registration form",
+      "response": "Error processing request: All connection attempts failed",
+      "execution_time": 0.006804227828979492,
+      "timestamp": "2025-08-27T19:29:53.217036"
+    },
+    "ui-ux-designer": {
+      "query": "Design the user interface for a task management application",
+      "response": "Error processing request: All connection attempts failed",
+      "execution_time": 0.0140533447265625,
+      "timestamp": "2025-08-27T19:29:54.248281"
+    },
+    "security-specialist": {
+      "query": "Identify security considerations for a login system",
+      "response": "Error processing request: All connection attempts failed",
+      "execution_time": 0.012931585311889648,
+      "timestamp": "2025-08-27T19:29:55.280966"
+    },
+    "solution-architect": {
+      "query": "Design a scalable architecture for a social media platform",
+      "response": "Error processing request: All connection attempts failed",
+      "execution_time": 0.012554168701171875,
+      "timestamp": "2025-08-27T19:29:56.307769"
+    },
+    "technical-architect": {
+      "query": "Create detailed technical specifications for a microservices system",
+      "response": "Error processing request: All connection attempts failed",
+      "execution_time": 0.012477874755859375,
+      "timestamp": "2025-08-27T19:29:57.333797"
+    },
+    "performance-specialist": {
+      "query": "Optimize the performance of a slow-loading web application",
+      "response": "Error processing request: All connection attempts failed",
+      "execution_time": 0.01203775405883789,
+      "timestamp": "2025-08-27T19:29:58.360015"
+    },
+    "simulator": {
+      "query": "Generate a realistic bug scenario for testing purposes",
+      "response": "Error processing request: All connection attempts failed",
+      "execution_time": 0.010653972625732422,
+      "timestamp": "2025-08-27T19:29:59.385500"
+    }
+  },
+  "all_results": [
+    {
+      "timestamp": "2025-08-27T20:29:50.139869",
+      "test": "Persona Response: requirement-concierge",
+      "status": "FAIL",
+      "details": {
+        "reason": "Response appears to be mock/dummy"
+      }
+    },
+    {
+      "timestamp": "2025-08-27T20:29:51.173319",
+      "test": "Persona Response: workflow-designer",
+      "status": "FAIL",
+      "details": {
+        "reason": "Response appears to be mock/dummy"
+      }
+    },
+    {
+      "timestamp": "2025-08-27T20:29:52.199645",
+      "test": "Persona Response: developer",
+      "status": "FAIL",
+      "details": {
+        "reason": "Response appears to be mock/dummy"
+      }
+    },
+    {
+      "timestamp": "2025-08-27T20:29:53.218212",
+      "test": "Persona Response: tester",
+      "status": "FAIL",
+      "details": {
+        "reason": "Response appears to be mock/dummy"
+      }
+    },
+    {
+      "timestamp": "2025-08-27T20:29:54.251179",
+      "test": "Persona Response: ui-ux-designer",
+      "status": "FAIL",
+      "details": {
+        "reason": "Response appears to be mock/dummy"
+      }
+    },
+    {
+      "timestamp": "2025-08-27T20:29:55.283270",
+      "test": "Persona Response: security-specialist",
+      "status": "FAIL",
+      "details": {
+        "reason": "Response appears to be mock/dummy"
+      }
+    },
+    {
+      "timestamp": "2025-08-27T20:29:56.309675",
+      "test": "Persona Response: solution-architect",
+      "status": "FAIL",
+      "details": {
+        "reason": "Response appears to be mock/dummy"
+      }
+    },
+    {
+      "timestamp": "2025-08-27T20:29:57.335531",
+      "test": "Persona Response: technical-architect",
+      "status": "FAIL",
+      "details": {
+        "reason": "Response appears to be mock/dummy"
+      }
+    },
+    {
+      "timestamp": "2025-08-27T20:29:58.362206",
+      "test": "Persona Response: performance-specialist",
+      "status": "FAIL",
+      "details": {
+        "reason": "Response appears to be mock/dummy"
+      }
+    },
+    {
+      "timestamp": "2025-08-27T20:29:59.387610",
+      "test": "Persona Response: simulator",
+      "status": "FAIL",
+      "details": {
+        "reason": "Response appears to be mock/dummy"
+      }
+    },
+    {
+      "timestamp": "2025-08-27T20:30:04.470532",
+      "test": "Persona Differentiation",
+      "status": "FAIL",
+      "details": {
+        "reason": "Responses too similar or insufficient data"
+      }
+    },
+    {
+      "timestamp": "2025-08-27T20:30:04.470780",
+      "test": "Response Authenticity Analysis",
+      "status": "PASS",
+      "details": {
+        "total_responses": 10,
+        "authentic_responses": 0,
+        "average_length": 56,
+        "unique_content": true,
+        "persona_appropriate": 0
+      }
+    }
+  ]
+}

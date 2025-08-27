@@ -1,0 +1,251 @@
+# OOM Service Discovery Configuration
+# This file provides DNS-based service discovery configuration for OOM services
+
+# =============================================================================
+# DNS-BASED SERVICE DISCOVERY MAPPINGS
+# =============================================================================
+
+# Container Names → Service Names → API Endpoints
+# This ensures consistent service discovery across environments
+
+services:
+  # Core OOM AI Services
+  requirement_concierge:
+    container_name: oom_requirement_concierge
+    dns_name: requirement-concierge.oom.local
+    internal_ports:
+      - 3002  # Web interface
+      - 8005  # API server
+    health_check: "http://oom_requirement_concierge:8005/health"
+    api_prefix: "/api/v1/requirements"
+
+  mind_engine:
+    container_name: oom_mind_engine
+    dns_name: mind-engine.oom.local
+    internal_ports:
+      - 8006  # Core processing
+      - 8009  # Pattern analysis
+    health_check: "http://oom_mind_engine:8006/health"
+    api_prefix: "/api/v1/mind"
+
+  program_manager:
+    container_name: oom_program_manager
+    dns_name: program-manager.oom.local
+    internal_ports:
+      - 8017  # Coordination API
+      - 8018  # Task management
+    health_check: "http://oom_program_manager:8017/health"
+    api_prefix: "/api/v1/programs"
+
+  meta_engine:
+    container_name: oom_meta_engine
+    dns_name: meta-engine.oom.local
+    internal_ports:
+      - 8019  # Metadata collection
+      - 8023  # Pattern recognition
+    health_check: "http://oom_meta_engine:8019/health"
+    api_prefix: "/api/v1/metadata"
+
+  automl_engine:
+    container_name: oom_automl_engine
+    dns_name: automl-engine.oom.local
+    internal_ports:
+      - 8024  # Model selection API
+      - 8025  # Training monitor
+      - 8026  # Model repository
+    health_check: "http://oom_automl_engine:8024/health"
+    api_prefix: "/api/v1/automl"
+
+  learning_engine:
+    container_name: oom_learning_engine
+    dns_name: learning-engine.oom.local
+    internal_ports:
+      - 8027  # Learning API
+      - 8028  # Adaptation service
+    health_check: "http://oom_learning_engine:8027/health"
+    api_prefix: "/api/v1/learning"
+
+  critic_engine:
+    container_name: oom_critic_engine
+    dns_name: critic-engine.oom.local
+    internal_ports:
+      - 9000  # Performance monitoring
+      - 9001  # Metrics collection
+      - 9002  # Quality assessment
+    health_check: "http://oom_critic_engine:9000/health"
+    api_prefix: "/api/v1/metrics"
+
+  rlhf_engine:
+    container_name: oom_rlhf_engine
+    dns_name: rlhf-engine.oom.local
+    internal_ports:
+      - 8029  # Feedback API
+      - 8030  # Training interface
+    health_check: "http://oom_rlhf_engine:8029/health"
+    api_prefix: "/api/v1/feedback"
+
+  innovator_engine:
+    container_name: oom_innovator_engine
+    dns_name: innovator-engine.oom.local
+    internal_ports:
+      - 8031  # Innovation API
+      - 8032  # Creative processing
+    health_check: "http://oom_innovator_engine:8031/health"
+    api_prefix: "/api/v1/innovation"
+
+  collaborator_engine:
+    container_name: oom_collaborator_engine
+    dns_name: collaborator-engine.oom.local
+    internal_ports:
+      - 8033  # Collaboration API
+      - 8034  # Agent coordination
+    health_check: "http://oom_collaborator_engine:8033/health"
+    api_prefix: "/api/v1/collaboration"
+
+  # Shared Infrastructure Services
+  message_bus:
+    container_name: oom_message_bus
+    dns_name: message-bus.oom.local
+    internal_ports:
+      - 6000  # Redis server
+      - 6003  # Message broker
+    health_check: "http://oom_message_bus:6000/ping"
+    type: "cache"
+
+  data_storage:
+    container_name: oom_data_storage
+    dns_name: data-storage.oom.local
+    internal_ports:
+      - 5000  # Database server
+      - 8035  # File storage API
+    health_check: "http://oom_data_storage:5000/health"
+    type: "database"
+
+# =============================================================================
+# EXTERNAL SERVICE DISCOVERY (for Kong API Gateway)
+# =============================================================================
+
+external_services:
+  # Standard infrastructure services
+  postgres:
+    container_name: oom-postgres
+    dns_name: postgres.oom.local
+    port: 5432
+    health_check: "pg_isready -h oom-postgres -p 5432 -U oom_user"
+
+  redis:
+    container_name: oom-redis
+    dns_name: redis.oom.local
+    port: 6379
+    health_check: "redis-cli -h oom-redis ping"
+
+  kafka:
+    container_name: oom-kafka
+    dns_name: kafka.oom.local
+    port: 9092
+    health_check: "kafka-topics --bootstrap-server oom-kafka:9092 --list"
+
+  kong:
+    container_name: oom-kong
+    dns_name: api-gateway.oom.local
+    ports:
+      - 8000  # Proxy
+      - 8001  # Admin API
+    health_check: "kong health"
+
+# =============================================================================
+# SERVICE COMMUNICATION PATTERNS
+# =============================================================================
+
+communication_patterns:
+  # How services should discover and communicate with each other
+
+  internal_service_to_service:
+    # Pattern: http://{container_name}:{port}/{endpoint}
+    # Example: http://oom_mind_engine:8006/api/v1/process
+    format: "http://{container_name}:{port}{api_prefix}"
+    timeout: 30
+    retries: 3
+
+  external_client_to_service:
+    # Pattern: http://localhost:8000{api_prefix}/{endpoint}
+    # Example: http://localhost:8000/api/v1/mind/process
+    format: "http://localhost:8000{api_prefix}"
+    timeout: 60
+    retries: 5
+
+  health_checks:
+    # Pattern: http://{container_name}:{port}/health
+    format: "http://{container_name}:{port}/health"
+    interval: 30
+    timeout: 10
+    retries: 3
+
+# =============================================================================
+# ENVIRONMENT-SPECIFIC CONFIGURATIONS
+# =============================================================================
+
+environments:
+  development:
+    dns_suffix: ".dev.oom.local"
+    expose_internal_ports: true
+    log_level: "DEBUG"
+    health_check_interval: 10
+
+  testing:
+    dns_suffix: ".test.oom.local"
+    expose_internal_ports: true
+    log_level: "INFO"
+    health_check_interval: 15
+
+  staging:
+    dns_suffix: ".staging.oom.local"
+    expose_internal_ports: false
+    log_level: "INFO"
+    health_check_interval: 30
+
+  production:
+    dns_suffix: ".oom.local"
+    expose_internal_ports: false
+    log_level: "WARN"
+    health_check_interval: 30
+
+# =============================================================================
+# LOAD BALANCING CONFIGURATION
+# =============================================================================
+
+load_balancing:
+  # When multiple instances of a service are running
+
+  algorithms:
+    default: "round_robin"
+    cpu_intensive: "least_connections"  # For AutoML, Learning engines
+    io_intensive: "weighted_round_robin"  # For Data storage
+
+  health_check_based_routing:
+    enabled: true
+    unhealthy_threshold: 3
+    healthy_threshold: 2
+
+# =============================================================================
+# MONITORING AND OBSERVABILITY
+# =============================================================================
+
+observability:
+  # Service discovery for monitoring tools
+
+  prometheus_targets:
+    - job_name: "oom-services"
+      dns_sd_configs:
+        - names: ["*.oom.local"]
+          type: "A"
+          port: 9090
+
+  jaeger_endpoints:
+    collector: "http://oom-jaeger:14268/api/traces"
+    agent: "oom-jaeger:6831"
+
+  log_aggregation:
+    driver: "fluentd"
+    tag: "oom.{{.Name}}"
+    fluentd_address: "oom-fluentd:24224"

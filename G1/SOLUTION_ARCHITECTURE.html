@@ -1,0 +1,677 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G1 Solution Architecture</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+            font-size: 2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        
+        h3 {
+            color: #34495e;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #34495e;
+            font-size: 1.3em;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        ul {
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 5px;
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        pre.code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.45;
+            margin: 15px 0;
+        }
+        
+        code {
+            background-color: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+        }
+        
+        .diagram-description {
+            background-color: #f8f9ff;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        em {
+            color: #34495e;
+            font-style: italic;
+        }
+        
+        .page-break {
+            page-break-before: always;
+        }
+        
+        @media print {
+            body {
+                font-size: 12px;
+                line-height: 1.4;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.6em;
+                page-break-after: avoid;
+            }
+            
+            h3 {
+                font-size: 1.4em;
+                page-break-after: avoid;
+            }
+            
+            pre.code {
+                page-break-inside: avoid;
+                font-size: 10px;
+            }
+            
+            table {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>G1 Solution Architecture</h1>
+<h2>AI-Powered Software Development Platform</h2><p><strong>Version:</strong> 1.0  
+<strong>Date:</strong> 2025-08-27  
+<strong>Document Type:</strong> Technical Architecture Specification</p><p>---</p><h2>📋 <strong>Table of Contents</strong></h2><p>1. <a href="#architecture-overview">Architecture Overview</a>
+2. <a href="#core-components">Core Components</a>
+3. <a href="#ai-personas-ecosystem">AI Personas Ecosystem</a>
+4. <a href="#workflow-orchestration">Workflow Orchestration</a>
+5. <a href="#communication-architecture">Communication Architecture</a>
+6. <a href="#service-infrastructure">Service Infrastructure</a>
+7. <a href="#data-flow--integration">Data Flow & Integration</a>
+8. <a href="#security--compliance">Security & Compliance</a>
+9. <a href="#scalability--performance">Scalability & Performance</a>
+10. <a href="#deployment-architecture">Deployment Architecture</a></p><p>---</p><h2>🏗️ <strong>Architecture Overview</strong></h2><h3><strong>System Vision</strong></h3>
+G1 is a revolutionary AI-powered software development platform that transforms business requirements into production-ready software through a network of specialized AI personas working in coordination.</p><h3><strong>Architecture Principles</strong></h3>
+<ul><li><strong>100% Persona-Driven</strong>: All decisions made by AI personas, zero hardcoded rules</li>
+<li><strong>Dynamic Workflow Adaptation</strong>: Workflows designed in real-time based on project needs</li>
+<li><strong>Microservices Architecture</strong>: Distributed, scalable, and maintainable</li>
+<li><strong>Event-Driven Communication</strong>: Asynchronous, resilient communication patterns</li>
+<li><strong>Context-Aware Processing</strong>: Intelligent context preservation and sharing</li></p><h3><strong>High-Level Architecture Diagram</strong></h3><p>
+<strong>System Diagram (Top-Bottom Layout)</strong></p><p>📦 <strong>Client Layer</strong>
+📦 <strong>Orchestration Layer</strong>
+📦 <strong>AI Personas Layer</strong>
+📦 <strong>Requirements</strong>
+📦 <strong>Architecture</strong>
+📦 <strong>Development</strong>
+📦 <strong>Communication</strong>
+📦 <strong>Infrastructure Layer</strong>
+📦 <strong>Data Layer</strong></p><p><strong>Components:</strong>
+<li>Web Interface</li>
+<li>REST API</li>
+<li>Command Line Interface</li>
+<li>Workflow Designer Persona</li>
+<li>Team Structure Architect</li>
+<li>Communication Architect</li>
+<li>Pure Persona Orchestrator</li>
+<li>Requirement Concierge</li>
+<li>Business Analyst</li>
+<li>Solution Architect</li>
+<li>Technical Architect</li>
+<li>API Designer</li>
+<li>Database Architect</li>
+<li>Developer</li>
+<li>Tester</li>
+<li>QA Specialist</li>
+<li>Central Knowledge Hub</li>
+<li>Verification Service</li>
+<li>Collaborative Transition Manager</li>
+<li>Personas Gateway</li>
+<li>RAG Engine</li>
+<li>Secrets Management</li>
+<li>Port Management</li>
+<li>(PostgreSQL)</li>
+<li>(Redis Cache)</li>
+<li>(Vector Store)</li>
+<li>(File Storage)</li></p><p><strong>Connections:</strong>
+<li>UI → API</li>
+<li>CLI → API</li>
+<li>API → PO</li>
+<li>PO → WD</li>
+<li>PO → TSA</li>
+<li>PO → CA</li>
+<li>WD → PG</li>
+<li>TSA → PG</li>
+<li>CA → PG</li>
+<li>RC → PG</li></p><p>---</p><h2>🎯 <strong>Core Components</strong></h2><h3><strong>1. Pure Persona-Driven Orchestrator</strong></h3><p><strong>Purpose</strong>: Central coordination engine that executes workflows designed entirely by AI personas.</p><p><strong>Key Features</strong>:
+<li><strong>Zero Hardcoded Rules</strong>: All logic determined by AI personas</li>
+<li><strong>Dynamic Workflow Execution</strong>: Adapts to any project complexity</li>
+<li><strong>Meta-Orchestration</strong>: Uses AI personas to design workflows</li>
+<li><strong>Context Management</strong>: Preserves requirements throughout execution</li>
+<li><strong>Quality Assurance</strong>: Built-in verification at every step</li></p><p><strong>Technical Specifications</strong>:
+<li><strong>Language</strong>: Python 3.11+</li>
+<li><strong>Framework</strong>: AsyncIO for concurrent processing</li>
+<li><strong>API</strong>: RESTful interfaces with OpenAPI specification</li>
+<li><strong>Scalability</strong>: Horizontal scaling support</li>
+<li><strong>Monitoring</strong>: Comprehensive logging and metrics</li></p><h3><strong>2. AI Personas Gateway</strong></h3><p><strong>Purpose</strong>: Unified interface for all AI persona interactions with intelligent routing and context management.</p><p><strong>Key Features</strong>:
+<li><strong>Persona Management</strong>: 22+ specialized AI personas</li>
+<li><strong>Context-Aware Routing</strong>: Intelligent request routing</li>
+<li><strong>Response Caching</strong>: Performance optimization</li>
+<li><strong>Load Balancing</strong>: Distributed persona processing</li>
+<li><strong>Health Monitoring</strong>: Real-time persona availability</li></p><p><strong>Technical Specifications</strong>:
+<li><strong>Framework</strong>: FastAPI with async processing</li>
+<li><strong>Port</strong>: 8013 (managed via port management service)</li>
+<li><strong>Authentication</strong>: JWT-based security</li>
+<li><strong>Rate Limiting</strong>: Configurable request throttling</li>
+<li><strong>Circuit Breaker</strong>: Resilience patterns</li></p><h3><strong>3. RAG (Retrieval-Augmented Generation) Engine</strong></h3><p><strong>Purpose</strong>: Advanced AI processing engine that combines retrieval and generation for intelligent responses.</p><p><strong>Key Features</strong>:
+<li><strong>Vector Search</strong>: Semantic similarity matching</li>
+<li><strong>Context Integration</strong>: Combines multiple information sources</li>
+<li><strong>LLM Integration</strong>: OpenAI/Claude/Local models support</li>
+<li><strong>Knowledge Base</strong>: Dynamic knowledge management</li>
+<li><strong>Response Generation</strong>: Contextually aware responses</li></p><p><strong>Technical Specifications</strong>:
+<li><strong>Port</strong>: 8003</li>
+<li><strong>Vector Database</strong>: Pinecone/ChromaDB support</li>
+<li><strong>Embedding Models</strong>: OpenAI/Sentence-Transformers</li>
+<li><strong>Cache Layer</strong>: Redis for response caching</li>
+<li><strong>Security</strong>: API key management via secrets service</li></p><p>---</p><h2>🤖 <strong>AI Personas Ecosystem</strong></h2><h3><strong>Persona Categories</strong></h3><h4><strong>1. Meta-Orchestration Personas</strong></h4>
+These personas design and manage the workflow itself:</p><p>| Persona | Role | Key Responsibilities |
+|---------|------|---------------------|
+| <strong>Workflow Designer</strong> | SDLC Workflow Design Specialist | - Design optimal SDLC phases<br>- Select appropriate personas<br>- Create workflow sequences |
+| <strong>Team Structure Architect</strong> | Multi-Team Design Specialist | - Design optimal team structures<br>- Define team boundaries<br>- Plan coordination strategies |
+| <strong>Communication Architect</strong> | Communication Strategy Designer | - Design communication patterns<br>- Prevent anti-patterns<br>- Select communication personas |</p><h4><strong>2. SDLC Core Personas</strong></h4>
+Traditional software development roles as AI personas:</p><p>
+<strong>System Diagram (Left-Right Layout)</strong></p><p>📦 <strong>Requirements Phase</strong>
+📦 <strong>Architecture Phase</strong>
+📦 <strong>Design Phase</strong>
+📦 <strong>Development Phase</strong>
+📦 <strong>Testing Phase</strong></p><p><strong>Components:</strong>
+<li>Requirement Concierge</li>
+<li>Business Analyst</li>
+<li>Program Manager</li>
+<li>Solution Architect</li>
+<li>Technical Architect</li>
+<li>API Designer</li>
+<li>Database Architect</li>
+<li>Developer</li>
+<li>Tester</li>
+<li>QA Specialist</li></p><p><strong>Connections:</strong>
+<li>RC → BA</li>
+<li>BA → PM</li>
+<li>PM → SA</li>
+<li>SA → TA</li>
+<li>TA → AD</li>
+<li>AD → DBA</li>
+<li>DBA → DEV</li>
+<li>DEV → TEST</li>
+<li>TEST → QA</li></p><h4><strong>3. Communication Personas</strong></h4>
+Specialized personas for managing information flow:</p><p>| Persona | Purpose | Key Functions |
+|---------|---------|---------------|
+| <strong>Central Knowledge Hub</strong> | Single source of truth | - Store original requirements<br>- Provide role-appropriate context<br>- Track interpretation changes |
+| <strong>Verification Service</strong> | Understanding validation | - Verify persona understanding<br>- Assess accuracy scores<br>- Identify clarification needs |
+| <strong>Collaborative Transition Manager</strong> | Smooth handoffs | - Facilitate collaborative transitions<br>- Manage knowledge transfer<br>- Ensure information fidelity |</p><h4><strong>4. Specialized Domain Personas</strong></h4>
+Additional expertise for specific domains:</p><p><li><strong>Infrastructure Engineer</strong>: DevOps and deployment</li>
+<li><strong>Security Architect</strong>: Security design and compliance</li>
+<li><strong>UI/UX Designer</strong>: User experience design</li>
+<li><strong>Performance Architect</strong>: Scalability and optimization</li>
+<li><strong>Integration Team Leader</strong>: Cross-team coordination</li>
+<li><strong>Team Lead Coordinator</strong>: Multi-team management</li></p><h3><strong>Persona Intelligence Framework</strong></h3><p>
+<strong>System Diagram (Top-Bottom Layout)</strong></p><p>📦 <strong>Input Processing</strong>
+📦 <strong>Persona Core</strong>
+📦 <strong>Output Generation</strong></p><p><strong>Components:</strong>
+<li>Requirements Input</li>
+<li>Context Analysis</li>
+<li>Historical Learning</li>
+<li>Role Definition</li>
+<li>Domain Expertise</li>
+<li>Pattern Recognition</li>
+<li>Decision Engine</li>
+<li>Response Generation</li>
+<li>Validation</li>
+<li>Format Optimization</li></p><p><strong>Connections:</strong>
+<li>REQ → CTX</li>
+<li>CTX → HIS</li>
+<li>HIS → ROLE</li>
+<li>ROLE → EXP</li>
+<li>EXP → PAT</li>
+<li>PAT → DEC</li>
+<li>DEC → RES</li>
+<li>RES → VAL</li>
+<li>VAL → FMT</li></p><p>---</p><h2>🔄 <strong>Workflow Orchestration</strong></h2><h3><strong>Dynamic Workflow Design Process</strong></h3><p>
+<strong>Process Flow Sequence</strong></p><p><strong>Participants:</strong>
+<li>Client</li>
+<li>Orchestrator</li>
+<li>WorkflowDesigner</li>
+<li>TeamArchitect</li>
+<li>CommArchitect</li>
+<li>ExecutionEngine</li></p><p><strong>Process Steps:</strong>
+1. Client → Orchestrator: Project Requirements
+2. Orchestrator → WorkflowDesigner: Design SDLC Workflow
+3. WorkflowDesigner- → Orchestrator: Workflow Definition
+4. Orchestrator → TeamArchitect: Design Team Structure
+5. TeamArchitect- → Orchestrator: Team Structure
+6. Orchestrator → CommArchitect: Design Communication Strategy
+7. CommArchitect- → Orchestrator: Communication Plan
+8. Orchestrator → ExecutionEngine: Execute Designed Workflow
+9. ExecutionEngine → ExecutionEngine: Execute Phase
+10. ExecutionEngine → ExecutionEngine: Verify Results
+11. ExecutionEngine → ExecutionEngine: Transition to Next Phase
+12. ExecutionEngine- → Client: Completed Software</p><h3><strong>Workflow Adaptation Engine</strong></h3><p><strong>Dynamic Phase Selection</strong>:
+<li>AI analyzes project complexity</li>
+<li>Selects appropriate SDLC phases</li>
+<li>Assigns optimal personas to each phase</li>
+<li>Creates dependency mappings</li></p><p><strong>Parallel Processing</strong>:
+<li>Identifies parallel work opportunities</li>
+<li>Coordinates multi-team development</li>
+<li>Manages resource allocation</li>
+<li>Prevents workflow bottlenecks</li></p><p><strong>Quality Gates</strong>:
+<li>AI-driven quality checkpoints</li>
+<li>Automatic verification processes</li>
+<li>Context fidelity validation</li>
+<li>Requirement alignment assessment</li></p><p>---</p><h2>📡 <strong>Communication Architecture</strong></h2><h3><strong>Hub-and-Spoke Model</strong></h3><p>
+<strong>System Diagram (Top-Bottom Layout)</strong></p><p>📦 <strong>Persona Network</strong>
+📦 <strong>Communication Services</strong></p><p><strong>Components:</strong>
+<li>Central Knowledge Hub Single Source of Truth</li>
+<li>Requirement Concierge</li>
+<li>Solution Architect</li>
+<li>Developer</li>
+<li>Tester</li>
+<li>Other Personas</li>
+<li>Verification Service</li>
+<li>Collaborative Transition Manager</li></p><p><strong>Connections:</strong>
+<li>CKH <→ P1</li>
+<li>CKH <→ P2</li>
+<li>CKH <→ P3</li>
+<li>CKH <→ P4</li>
+<li>CKH <→ P5</li>
+<li>P1 <→ VS</li>
+<li>P2 <→ VS</li>
+<li>P3 <→ VS</li>
+<li>P4 <→ VS</li>
+<li>P1 <→ CTM</li></p><h3><strong>Anti-Pattern Prevention</strong></h3><p><strong>Chinese Whispers Prevention</strong>:
+<li>Direct access to original requirements</li>
+<li>Context fidelity tracking</li>
+<li>Understanding verification</li>
+<li>Information loss detection</li></p><p><strong>Communication Quality Assurance</strong>:
+<li>Automatic accuracy scoring</li>
+<li>Misunderstanding detection</li>
+<li>Clarification triggers</li>
+<li>Context enrichment</li></p><p><strong>Collaborative Handoffs</strong>:
+<li>Joint review sessions</li>
+<li>Knowledge transfer protocols</li>
+<li>Mentorship coordination</li>
+<li>Quality validation</li></p><p>---</p><h2>🛠️ <strong>Service Infrastructure</strong></h2><h3><strong>Microservices Architecture</strong></h3><p>
+<strong>System Diagram (Top-Bottom Layout)</strong></p><p>📦 <strong>API Gateway Layer</strong>
+📦 <strong>Core Services</strong>
+📦 <strong>AI Services</strong>
+📦 <strong>Data Services</strong>
+📦 <strong>Infrastructure</strong></p><p><strong>Components:</strong>
+<li>API Gateway Load Balancer</li>
+<li>Personas Gateway Port 8013</li>
+<li>RAG Engine Port 8003</li>
+<li>Secrets Management Port 8004</li>
+<li>Port Management Port 8005</li>
+<li>AI Manager Port 8007</li>
+<li>Pinecone Index Port 8006</li>
+<li>(PostgreSQL Port 5432)</li>
+<li>(Redis Port 6379)</li>
+<li>Monitoring Prometheus/Grafana</li>
+<li>Logging ELK Stack</li></p><p><strong>Connections:</strong>
+<li>GW → PG</li>
+<li>GW → RAG</li>
+<li>PG → RAG</li>
+<li>PG → SM</li>
+<li>RAG → AI</li>
+<li>RAG → PIN</li>
+<li>AI → PIN</li>
+<li>PG → PDB</li>
+<li>RAG → PDB</li>
+<li>PG → RDB</li></p><h3><strong>Service Specifications</strong></h3><p>| Service | Port | Technology | Purpose | Scaling |
+|---------|------|------------|---------|---------|
+| <strong>Personas Gateway</strong> | 8013 | FastAPI + Python | Persona interface management | Horizontal |
+| <strong>RAG Engine</strong> | 8003 | Python + LangChain | AI processing engine | Horizontal |
+| <strong>Secrets Management</strong> | 8004 | FastAPI + Vault | Secure credential management | Redundant |
+| <strong>Port Management</strong> | 8005 | FastAPI + SQLite | Dynamic port allocation | Single instance |
+| <strong>AI Manager</strong> | 8007 | Python + AI SDKs | AI model orchestration | Horizontal |
+| <strong>Pinecone Index</strong> | 8006 | Python + Pinecone | Vector database interface | Horizontal |</p><h3><strong>Container Orchestration</strong></h3><pre class="code yaml"><code><h1>Docker Compose Architecture</h1>
+version: '3.8'</p><p>services:
+  personas-gateway:
+    image: g1/personas-gateway:latest
+    ports: ["8013:8013"]
+    depends_on: [rag-engine, secrets-management]
+    environment:
+      - RAG_ENGINE_URL=http://rag-engine:8003
+      - SECRETS_SERVICE_URL=http://secrets-management:8004
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8013/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3</p><p>  rag-engine:
+    image: g1/rag-engine:latest
+    ports: ["8003:8003"]
+    depends_on: [secrets-management, postgres, redis]
+    environment:
+      - POSTGRES_URL=postgresql://postgres:5432/rag_db
+      - REDIS_URL=redis://redis:6379
+      - SECRETS_SERVICE_URL=http://secrets-management:8004</code></pre><p>---</p><h2>🔄 <strong>Data Flow & Integration</strong></h2><h3><strong>Request Processing Flow</strong></h3><p>
+<strong>Process Flow Sequence</strong></p><p><strong>Participants:</strong>
+<li>Client</li>
+<li>Gateway</li>
+<li>Orchestrator</li>
+<li>KnowledgeHub</li>
+<li>Personas</li>
+<li>RAGEngine</li>
+<li>Database</li></p><p><strong>Process Steps:</strong>
+1. Client → Gateway: Project Request
+2. Gateway → Orchestrator: Validated Request
+3. Orchestrator → KnowledgeHub: Store Original Requirements
+4. KnowledgeHub → Database: Persist Context
+5. Orchestrator → KnowledgeHub: Get Context for Persona
+6. KnowledgeHub → Personas: Role-appropriate Context
+7. Personas → RAGEngine: Process with AI
+8. RAGEngine → Database: Query Relevant Information
+9. RAGEngine- → Personas: AI-generated Response
+10. Personas → KnowledgeHub: Update with Results
+11. KnowledgeHub → Database: Store Results
+12. Orchestrator- → Client: Final Software Product</p><h3><strong>Context Management</strong></h3><p><strong>Context Types</strong>:
+<li><strong>Original Requirements</strong>: Immutable source of truth</li>
+<li><strong>Role Context</strong>: Persona-specific information</li>
+<li><strong>Workflow Context</strong>: Phase and dependency information</li>
+<li><strong>Historical Context</strong>: Learning from previous executions</li></p><p><strong>Context Enrichment</strong>:
+<li>Automatic context expansion</li>
+<li>Related information retrieval</li>
+<li>Cross-reference validation</li>
+<li>Quality scoring</li></p><p><strong>Context Preservation</strong>:
+<li>Immutable requirement storage</li>
+<li>Version-controlled context</li>
+<li>Audit trail maintenance</li>
+<li>Rollback capabilities</li></p><p>---</p><h2>🔐 <strong>Security & Compliance</strong></h2><h3><strong>Security Architecture</strong></h3><p>
+<strong>System Diagram (Top-Bottom Layout)</strong></p><p>📦 <strong>External Layer</strong>
+📦 <strong>Authentication Layer</strong>
+📦 <strong>Application Layer</strong>
+📦 <strong>Infrastructure Layer</strong></p><p><strong>Components:</strong>
+<li>Web Application Firewall</li>
+<li>Load Balancer SSL Termination</li>
+<li>JWT Authentication</li>
+<li>Role-Based Access Control</li>
+<li>API Key Management</li>
+<li>Data Encryption at Rest & Transit</li>
+<li>Input Validation</li>
+<li>Rate Limiting</li>
+<li>Network Isolation VPC/Subnets</li>
+<li>Security Monitoring SIEM</li>
+<li>Audit Logging</li></p><p><strong>Connections:</strong>
+<li>WAF → LB</li>
+<li>LB → AUTH</li>
+<li>AUTH → RBAC</li>
+<li>RBAC → API</li>
+<li>API → ENC</li>
+<li>ENC → VAL</li>
+<li>VAL → RATE</li>
+<li>RATE → NET</li>
+<li>NET → MON</li>
+<li>MON → AUDIT</li></p><h3><strong>Security Features</strong></h3><p><strong>Authentication & Authorization</strong>:
+<li>JWT-based authentication</li>
+<li>Role-based access control (RBAC)</li>
+<li>API key management</li>
+<li>Service-to-service authentication</li></p><p><strong>Data Protection</strong>:
+<li>Encryption at rest (AES-256)</li>
+<li>Encryption in transit (TLS 1.3)</li>
+<li>Secure secret management</li>
+<li>Data anonymization capabilities</li></p><p><strong>Compliance Standards</strong>:
+<li><strong>GDPR</strong>: Data privacy and user rights</li>
+<li><strong>SOC 2</strong>: Security and availability controls</li>
+<li><strong>ISO 27001</strong>: Information security management</li>
+<li><strong>HIPAA</strong>: Healthcare data protection (when applicable)</li></p><p><strong>Security Monitoring</strong>:
+<li>Real-time threat detection</li>
+<li>Anomaly detection</li>
+<li>Security audit logging</li>
+<li>Compliance reporting</li></p><p>---</p><h2>📊 <strong>Scalability & Performance</strong></h2><h3><strong>Horizontal Scaling Architecture</strong></h3><p>
+<strong>System Diagram (Top-Bottom Layout)</strong></p><p>📦 <strong>Load Balancer</strong>
+📦 <strong>Auto Scaling Groups</strong>
+📦 <strong>Personas Gateway Cluster</strong>
+📦 <strong>RAG Engine Cluster</strong>
+📦 <strong>Database Cluster</strong></p><p><strong>Components:</strong>
+<li>Application Load Balancer</li>
+<li>Personas Gateway 1</li>
+<li>Personas Gateway 2</li>
+<li>Personas Gateway N</li>
+<li>RAG Engine 1</li>
+<li>RAG Engine 2</li>
+<li>RAG Engine N</li>
+<li>(PostgreSQL Primary)</li>
+<li>(PostgreSQL Replica 1)</li>
+<li>(PostgreSQL Replica N)</li>
+<li>(Redis Cluster)</li></p><p><strong>Connections:</strong>
+<li>ALB → PG1</li>
+<li>ALB → PG2</li>
+<li>ALB → PG3</li>
+<li>PG1 → RAG1</li>
+<li>PG2 → RAG2</li>
+<li>PG3 → RAG3</li>
+<li>RAG1 → PDB_PRIMARY</li>
+<li>RAG2 → PDB_REPLICA1</li>
+<li>RAG3 → PDB_REPLICA2</li>
+<li>PG1 → RDB_CLUSTER</li></p><h3><strong>Performance Optimization</strong></h3><p><strong>Caching Strategy</strong>:
+<li><strong>L1 Cache</strong>: In-memory response caching</li>
+<li><strong>L2 Cache</strong>: Redis distributed caching</li>
+<li><strong>L3 Cache</strong>: CDN for static content</li>
+<li><strong>Smart Invalidation</strong>: Context-aware cache management</li></p><p><strong>Async Processing</strong>:
+<li>Non-blocking I/O operations</li>
+<li>Concurrent persona processing</li>
+<li>Background task queuing</li>
+<li>Streaming responses</li></p><p><strong>Database Optimization</strong>:
+<li>Connection pooling</li>
+<li>Query optimization</li>
+<li>Index management</li>
+<li>Read replicas</li></p><p><strong>Performance Metrics</strong>:
+<li><strong>Response Time</strong>: <200ms average</li>
+<li><strong>Throughput</strong>: 10,000+ requests/second</li>
+<li><strong>Availability</strong>: 99.9% uptime SLA</li>
+<li><strong>Scalability</strong>: Auto-scaling based on demand</li></p><p>---</p><h2>🚀 <strong>Deployment Architecture</strong></h2><h3><strong>Cloud-Native Deployment</strong></h3><p>
+<strong>System Diagram (Top-Bottom Layout)</strong></p><p>📦 <strong>Production Environment</strong>
+📦 <strong>Kubernetes Cluster</strong>
+📦 <strong>Ingress</strong>
+📦 <strong>Application Pods</strong>
+📦 <strong>Storage</strong>
+📦 <strong>Managed Services</strong>
+📦 <strong>Monitoring</strong></p><p><strong>Components:</strong>
+<li>NGINX Ingress Controller</li>
+<li>Cert Manager</li>
+<li>Personas Gateway Pods</li>
+<li>RAG Engine Pods</li>
+<li>AI Manager Pods</li>
+<li>Persistent Volume Claims</li>
+<li>Kubernetes Secrets</li>
+<li>(AWS RDS PostgreSQL)</li>
+<li>(AWS ElastiCache)</li>
+<li>(AWS S3 Storage)</li>
+<li>Prometheus</li>
+<li>Grafana</li>
+<li>Jaeger Tracing</li></p><p><strong>Connections:</strong>
+<li>ING → PG_POD</li>
+<li>ING → RAG_POD</li>
+<li>PG_POD → RAG_POD</li>
+<li>PG_POD → AI_POD</li>
+<li>PG_POD → RDS</li>
+<li>RAG_POD → RDS</li>
+<li>PG_POD → ELASTICACHE</li>
+<li>RAG_POD → ELASTICACHE</li>
+<li>PG_POD → S3</li>
+<li>RAG_POD → S3</li></p><h3><strong>Environment Management</strong></h3><p><strong>Multi-Environment Strategy</strong>:
+<li><strong>Development</strong>: Local Docker Compose</li>
+<li><strong>Staging</strong>: Kubernetes cluster with production-like setup</li>
+<li><strong>Production</strong>: Multi-region Kubernetes deployment</li>
+<li><strong>Disaster Recovery</strong>: Cross-region backup and failover</li></p><p><strong>CI/CD Pipeline</strong>:</p><p>
+<strong>System Diagram (Left-Right Layout)</strong></p><p>
+<strong>Connections:</strong>
+<li>DEV[Developer] → GIT[Git Repository]</li>
+<li>GIT → BUILD[Build & Test]</li>
+<li>BUILD → SCAN[Security Scan]</li>
+<li>SCAN → STAGE[Deploy to Staging]</li>
+<li>STAGE → TEST[Integration Tests]</li>
+<li>TEST → APPROVE[Manual Approval]</li>
+<li>APPROVE → PROD[Deploy to Production]</li>
+<li>PROD → MONITOR[Monitor & Validate]</li></p><p><strong>Deployment Configuration</strong>:
+<li><strong>Blue-Green Deployments</strong>: Zero-downtime updates</li>
+<li><strong>Canary Releases</strong>: Gradual feature rollouts</li>
+<li><strong>Feature Flags</strong>: Runtime feature control</li>
+<li><strong>Health Checks</strong>: Automated health validation</li></p><p>---</p><h2>📈 <strong>Monitoring & Observability</strong></h2><h3><strong>Observability Stack</strong></h3><p>
+<strong>System Diagram (Top-Bottom Layout)</strong></p><p>📦 <strong>Data Collection</strong>
+📦 <strong>Processing Layer</strong>
+📦 <strong>Visualization</strong>
+📦 <strong>Alerting</strong></p><p><strong>Components:</strong>
+<li>Application Metrics</li>
+<li>Application Logs</li>
+<li>Distributed Traces</li>
+<li>Prometheus Metrics Storage</li>
+<li>ELK Stack Log Processing</li>
+<li>Jaeger Trace Processing</li>
+<li>Grafana Dashboards</li>
+<li>Kibana Log Analysis</li>
+<li>Jaeger UI Trace Analysis</li>
+<li>Alert Manager</li>
+<li>PagerDuty</li>
+<li>Slack Notifications</li></p><p><strong>Connections:</strong>
+<li>APPS → PROM</li>
+<li>LOGS → ELK</li>
+<li>TRACES → JAEGER</li>
+<li>PROM → GRAF</li>
+<li>ELK → KIB</li>
+<li>JAEGER → JAEGER_UI</li>
+<li>PROM → AM</li>
+<li>AM → PD</li>
+<li>AM → SLACK</li></p><h3><strong>Key Metrics & KPIs</strong></h3><p><strong>Business Metrics</strong>:
+<li>Project completion rate</li>
+<li>Average development time</li>
+<li>Customer satisfaction score</li>
+<li>Cost per project</li></p><p><strong>Technical Metrics</strong>:
+<li>API response times</li>
+<li>Error rates</li>
+<li>Throughput (requests/second)</li>
+<li>Resource utilization</li></p><p><strong>AI Performance Metrics</strong>:
+<li>Persona response accuracy</li>
+<li>Context preservation rate</li>
+<li>Workflow adaptation success</li>
+<li>Requirement fidelity score</li></p><p>---</p><h2>🎯 <strong>Technology Stack Summary</strong></h2><h3><strong>Backend Technologies</strong></h3>
+<li><strong>Languages</strong>: Python 3.11+, JavaScript/TypeScript</li>
+<li><strong>Frameworks</strong>: FastAPI, AsyncIO, LangChain</li>
+<li><strong>Databases</strong>: PostgreSQL, Redis, Vector Databases</li>
+<li><strong>AI/ML</strong>: OpenAI API, Claude API, Hugging Face</li>
+<li><strong>Message Queue</strong>: Redis Pub/Sub, Celery</li></p><h3><strong>Infrastructure Technologies</strong></h3>
+<li><strong>Containerization</strong>: Docker, Docker Compose</li>
+<li><strong>Orchestration</strong>: Kubernetes</li>
+<li><strong>Cloud Platforms</strong>: AWS, GCP, Azure</li>
+<li><strong>Service Mesh</strong>: Istio (optional)</li>
+<li><strong>API Gateway</strong>: NGINX, Kong</li></p><h3><strong>Development & Operations</strong></h3>
+<li><strong>Version Control</strong>: Git, GitHub</li>
+<li><strong>CI/CD</strong>: GitHub Actions, Jenkins</li>
+<li><strong>Monitoring</strong>: Prometheus, Grafana, ELK Stack</li>
+<li><strong>Security</strong>: HashiCorp Vault, JWT, OAuth2</li>
+<li><strong>Testing</strong>: pytest, Jest, Kubernetes test frameworks</li></p><p>---</p><h2>🚀 <strong>Future Architecture Evolution</strong></h2><h3><strong>Planned Enhancements</strong></h3><p><strong>Advanced AI Integration</strong>:
+<li>Multi-modal AI capabilities (text, image, video)</li>
+<li>Domain-specific AI model fine-tuning</li>
+<li>Federated learning across deployments</li>
+<li>Advanced reasoning capabilities</li></p><p><strong>Enhanced Scalability</strong>:
+<li>Multi-cloud deployment</li>
+<li>Edge computing integration</li>
+<li>Global content delivery network</li>
+<li>Advanced auto-scaling algorithms</li></p><p><strong>Extended Capabilities</strong>:
+<li>Real-time collaboration features</li>
+<li>Voice-to-code generation</li>
+<li>Automated testing and deployment</li>
+<li>Intelligent project management</li></p><p><strong>Industry-Specific Modules</strong>:
+<li>Healthcare compliance module</li>
+<li>Financial services security</li>
+<li>Manufacturing integration</li>
+<li>Education-specific features</li></p><p>---</p><h2>📞 <strong>Architecture Support & Documentation</strong></h2><h3><strong>Documentation Resources</strong></h3>
+<li><strong>API Documentation</strong>: OpenAPI/Swagger specifications</li>
+<li><strong>Deployment Guides</strong>: Step-by-step deployment instructions</li>
+<li><strong>Development Setup</strong>: Local development environment guide</li>
+<li><strong>Troubleshooting</strong>: Common issues and solutions</li></p><h3><strong>Support Channels</strong></h3>
+<li><strong>Technical Documentation</strong>: Comprehensive architecture guides</li>
+<li><strong>Developer Community</strong>: Forums and discussion boards</li>
+<li><strong>Professional Support</strong>: Enterprise support options</li>
+<li><strong>Training Resources</strong>: Architecture and integration training</li></ul><p>---</p><p><strong>Document Status</strong>: ✅ Complete  
+<strong>Last Updated</strong>: 2025-08-27  
+<strong>Version Control</strong>: Maintained in Git repository  
+<strong>Review Cycle</strong>: Quarterly architecture reviews  </p><p>---</p><p><em>This architecture document represents the current state of the G1 platform and serves as the definitive guide for understanding, deploying, and extending the system.</em></p>
+</body>
+</html>

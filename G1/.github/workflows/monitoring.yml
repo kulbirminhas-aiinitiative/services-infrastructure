@@ -1,0 +1,78 @@
+name: Monitor OOM System Health
+
+on:
+  schedule:
+    # Run every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    name: System Health Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install monitoring dependencies
+      run: |
+        pip install requests prometheus-client psutil
+
+    - name: Check service health
+      env:
+        MONITORING_URL: ${{ secrets.MONITORING_URL }}
+        GRAFANA_API_KEY: ${{ secrets.GRAFANA_API_KEY }}
+      run: |
+        python scripts/health_check.py
+
+    - name: Check system metrics
+      env:
+        PROMETHEUS_URL: ${{ secrets.PROMETHEUS_URL }}
+      run: |
+        python scripts/metrics_check.py
+
+    - name: Send alert if unhealthy
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#oom-alerts'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        text: "🚨 OOM System Health Check Failed!"
+
+  performance-test:
+    name: Performance Test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install performance test dependencies
+      run: |
+        pip install locust requests
+
+    - name: Run performance tests
+      env:
+        TARGET_URL: ${{ secrets.STAGING_URL }}
+      run: |
+        locust -f tests/performance/locustfile.py --headless -u 100 -r 10 -t 5m --host=$TARGET_URL
+
+    - name: Upload performance results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-results
+        path: performance-results.html

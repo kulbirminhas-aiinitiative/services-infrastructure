@@ -1,0 +1,144 @@
+# =============================================================================
+# OOM Platform Comprehensive Port Allocation Configuration
+# =============================================================================
+# This file defines the complete port allocation strategy for all OOM services
+# 
+# Port Allocation Strategy:
+# - Infrastructure Services: 5000-5999
+# - Core Application Services: 4000-4999  
+# - AI/ML Services: 6000-6999
+# - Business Services: 7000-7999
+# - Security Services: 8000-8999
+# - API & Gateway Services: 9000-9999
+# - Frontend/Dashboard Services: 3000-3999
+# - Monitoring & Observability: 10000-19999
+#
+# Deployment Strategy:
+# - Non-Docker: Services run on 'backend_port' (internal port)
+# - Docker: Container runs on 'backend_port', exposed via 'external_port'
+# - This ensures consistent internal communication regardless of deployment
+#
+# Format: service_name,external_port,backend_port,category,description
+
+# =============================================================================
+# INFRASTRUCTURE SERVICES (5000-5999)
+# =============================================================================
+postgres,5432,5432,infrastructure,"PostgreSQL Database"
+redis,6379,6379,infrastructure,"Redis Cache and Message Store"
+kafka,9092,9092,infrastructure,"Apache Kafka Message Queue"
+zookeeper,2181,2181,infrastructure,"Zookeeper Coordination Service"
+
+# Kong API Gateway Infrastructure
+kong,8000,8000,infrastructure,"Kong API Gateway"
+kong-admin,8001,8001,infrastructure,"Kong Admin API"
+kong-database,5433,5433,infrastructure,"Kong PostgreSQL Database"
+
+# =============================================================================
+# CORE APPLICATION SERVICES (4000-4999)
+# =============================================================================
+requirement-analysis-service,4001,8101,core,"Requirement Analysis and Processing"
+program-manager-service,4002,8102,core,"Program Management and Coordination"
+cognitive-processing-service,4003,8103,core,"Cognitive Processing Engine"
+quality-assurance-service,4004,8104,core,"Quality Assurance and Testing"
+learning-metadata-service,4005,8105,core,"Learning and Metadata Management"
+automl-service,4006,8106,core,"Automated Machine Learning"
+innovation-service,4007,8107,core,"Innovation and Ideation Engine"
+collaboration-service,4008,8108,core,"Collaboration and Communication"
+api-gateway-service,4009,8109,core,"Core API Gateway Service"
+control-plane-service,4010,8110,core,"Control Plane Management"
+task-manager-service,4011,8111,core,"Task Management and Orchestration"
+finance-service,4012,8112,core,"Finance and Resource Management"
+feature-engineering-service,4013,8113,core,"Feature Engineering Pipeline"
+tooling-service,4014,8114,core,"Development Tools and Utilities"
+ethics-service,4015,8115,core,"Ethics and Compliance Engine"
+
+# =============================================================================
+# AI/ML SERVICES (6000-6999)  
+# =============================================================================
+ai-manager,6001,8201,ai,"AI Manager and Orchestration"
+rag-engine,6002,8202,ai,"Retrieval Augmented Generation"
+ethics-engine,6003,8203,ai,"AI Ethics and Bias Detection"
+nlp-engine,6004,8204,ai,"Natural Language Processing"
+ml-training-service,6005,8205,ai,"Machine Learning Training"
+model-serving-service,6006,8206,ai,"Model Serving and Inference"
+vector-database,6007,8207,ai,"Vector Database for Embeddings"
+
+# =============================================================================
+# BUSINESS SERVICES (7000-7999)
+# =============================================================================
+finance-ops-engine,7001,8301,business,"Finance Operations Engine"
+tooling-engine,7002,8302,business,"Business Tooling Engine"
+image-text-converter,7003,8303,business,"Image to Text Conversion"
+workflow-engine,7004,8304,business,"Business Workflow Engine"
+analytics-engine,7005,8305,business,"Business Analytics Engine"
+reporting-service,7006,8306,business,"Reporting and Dashboard Service"
+
+# =============================================================================
+# SECURITY SERVICES (8000-8999)
+# =============================================================================
+security-engine,8100,8401,security,"Core Security Engine"
+security-engine-standalone,8101,8402,security,"Standalone Security Engine"
+secrets-management-api,8102,8403,security,"Secrets Management API"
+authentication-service,8103,8404,security,"Authentication and Authorization"
+encryption-service,8104,8405,security,"Encryption and Key Management"
+
+# =============================================================================
+# API & GATEWAY SERVICES (9000-9999)
+# =============================================================================
+api-monitor,9001,8501,api,"API Monitoring and Analytics"
+api-testing-monitor,9002,8502,api,"API Testing Monitor"
+api-testing-service,9003,8503,api,"API Testing Service"
+load-balancer,9004,8504,api,"Load Balancer Service"
+rate-limiter,9005,8505,api,"Rate Limiting Service"
+
+# =============================================================================
+# FRONTEND & DASHBOARD SERVICES (3000-3999)
+# =============================================================================
+main-dashboard,3000,3000,frontend,"Main OOM Dashboard"
+api-monitor-dashboard,3020,3020,frontend,"API Monitor Dashboard"
+port-manager-dashboard,3021,3021,frontend,"Port Manager Dashboard"
+system-monitor-dashboard,3022,3022,frontend,"System Monitor Dashboard"
+admin-dashboard,3023,3023,frontend,"Admin Dashboard"
+
+# =============================================================================
+# MONITORING & OBSERVABILITY (10000-19999)
+# =============================================================================
+prometheus,9090,9090,monitoring,"Prometheus Metrics Collection"
+grafana,3000,3001,monitoring,"Grafana Visualization"
+jaeger,16686,16686,monitoring,"Jaeger Distributed Tracing"
+jaeger-collector,14268,14268,monitoring,"Jaeger Trace Collector"
+prometheus-pushgateway,9091,9091,monitoring,"Prometheus Push Gateway"
+alertmanager,9093,9093,monitoring,"Prometheus Alert Manager"
+
+# =============================================================================
+# DATA SERVICES (5100-5199)
+# =============================================================================
+user-data-service,5101,8601,data,"User Data Management"
+workflow-data-service,5102,8602,data,"Workflow Data Management"
+analytics-data-service,5103,8603,data,"Analytics Data Service"
+backup-service,5104,8604,data,"Data Backup Service"
+migration-service,5105,8605,data,"Data Migration Service"
+
+# =============================================================================
+# QUEUE & MESSAGING SERVICES (5200-5299)
+# =============================================================================
+queue-manager,5201,8701,queue,"Queue Management Service"
+notification-service,5202,8702,queue,"Notification Service"
+event-bus,5203,8703,queue,"Event Bus Service"
+webhook-service,5204,8704,queue,"Webhook Management Service"
+
+# =============================================================================
+# DEVELOPMENT & TESTING SERVICES (5300-5399)
+# =============================================================================
+test-runner-service,5301,8801,testing,"Test Runner Service"
+mock-service,5302,8802,testing,"Mock Service for Testing"
+load-test-service,5303,8803,testing,"Load Testing Service"
+integration-test-service,5304,8804,testing,"Integration Testing Service"
+
+# =============================================================================
+# SPECIALIZED SERVICES (5400-5499)
+# =============================================================================
+file-service,5401,8901,specialized,"File Management Service"
+email-service,5402,8902,specialized,"Email Service"
+pdf-service,5403,8903,specialized,"PDF Generation Service"
+image-processing-service,5404,8904,specialized,"Image Processing Service"

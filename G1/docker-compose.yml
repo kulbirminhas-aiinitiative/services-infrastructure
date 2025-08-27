@@ -1,0 +1,325 @@
+version: '3.8'
+
+networks:
+  oom-network:
+    external: true
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+  jaeger_data:
+
+services:
+  # =============================================================================
+  # INFRASTRUCTURE SERVICES
+  # =============================================================================
+  
+  # Primary Database - Proxy to Host PostgreSQL on port 5433
+  postgres:
+    image: alpine/socat:latest
+    container_name: oom-postgres-proxy
+    command: ["tcp-listen:5432,fork,reuseaddr", "tcp-connect:host.docker.internal:5433"]
+    ports:
+      - "5432:5432"
+    networks:
+      - oom-network
+    labels:
+      - "oom.service.category=infrastructure"
+      - "oom.service.name=postgres"
+      - "oom.service.type=database-proxy"
+    depends_on: []
+    restart: unless-stopped
+
+  # Cache & Message Queue
+  redis:
+    image: redis:7-alpine
+    container_name: oom-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - oom-network
+    labels:
+      - "oom.service.category=infrastructure"
+      - "oom.service.name=redis"
+      - "oom.service.type=cache"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Message Queue
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: oom-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - oom-network
+    labels:
+      - "oom.service.category=infrastructure"
+      - "oom.service.name=zookeeper"
+      - "oom.service.type=coordination"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: oom-kafka
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - oom-network
+    labels:
+      - "oom.service.category=infrastructure"
+      - "oom.service.name=kafka"
+      - "oom.service.type=messaging"
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # API Gateway Database
+  kong-database:
+    image: postgres:15-alpine
+    container_name: oom-kong-db
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kong
+    networks:
+      - oom-network
+    labels:
+      - "oom.service.category=infrastructure"
+      - "oom.service.name=kong-database"
+      - "oom.service.type=database"
+
+  # Kong Bootstrap (migrations)
+  kong-bootstrap:
+    image: kong:3.4.0
+    container_name: oom-kong-bootstrap
+    command: kong migrations bootstrap
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_DATABASE: kong
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+    depends_on:
+      - kong-database
+    networks:
+      - oom-network
+    labels:
+      - "oom.service.category=infrastructure"
+      - "oom.service.name=kong-bootstrap"
+      - "oom.service.type=migration"
+
+  # API Gateway
+  kong:
+    image: kong:3.4.0
+    container_name: oom-kong
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_DATABASE: kong
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8443:8443"
+      - "8444:8444"
+    depends_on:
+      kong-bootstrap:
+        condition: service_completed_successfully
+    networks:
+      - oom-network
+    labels:
+      - "oom.service.category=infrastructure"
+      - "oom.service.name=kong"
+      - "oom.service.type=gateway"
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Distributed Tracing
+  jaeger:
+    image: jaegertracing/all-in-one:1.49
+    container_name: oom-jaeger
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "14268:14268"  # HTTP collector
+    volumes:
+      - jaeger_data:/tmp
+    networks:
+      - oom-network
+    labels:
+      - "oom.service.category=infrastructure"
+      - "oom.service.name=jaeger"
+      - "oom.service.type=tracing"
+
+  # Monitoring
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: oom-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+    networks:
+      - oom-network
+    labels:
+      - "oom.service.category=infrastructure"
+      - "oom.service.name=prometheus"
+      - "oom.service.type=monitoring"
+
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: oom-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: oom_grafana_password
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - oom-network
+    labels:
+      - "oom.service.category=infrastructure"
+      - "oom.service.name=grafana"
+      - "oom.service.type=visualization"
+
+  # =============================================================================
+  # CORE BUSINESS SERVICES
+  # =============================================================================
+
+  # Requirement Analysis Service
+  requirement-analysis-service:
+    build:
+      context: .
+      dockerfile: ./services/core/requirement-analysis-service/Dockerfile
+    container_name: oom-requirement-analysis-service
+    environment:
+      SERVICE_NAME: requirement-analysis-service
+      POSTGRES_URL: postgresql://oom_user:oom_password@postgres:5432/oom_platform
+      REDIS_URL: redis://redis:6379/0
+      JAEGER_ENDPOINT: http://jaeger:14268/api/traces
+    ports:
+      - "4001:8001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - oom-network
+    labels:
+      - "oom.service.category=core"
+      - "oom.service.name=requirement-analysis-service"
+      - "oom.service.type=analysis"
+
+  # Program Manager Service
+  program-manager-service:
+    build:
+      context: .
+      dockerfile: ./services/core/program-manager-service/Dockerfile
+    container_name: oom-program-manager-service
+    environment:
+      SERVICE_NAME: program-manager-service
+      POSTGRES_URL: postgresql://oom_user:oom_password@postgres:5432/oom_platform
+      REDIS_URL: redis://redis:6379/0
+      JAEGER_ENDPOINT: http://jaeger:14268/api/traces
+      REQUIREMENT_ANALYSIS_URL: http://requirement-analysis-service:8001
+    ports:
+      - "4002:8001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      requirement-analysis-service:
+        condition: service_started
+    networks:
+      - oom-network
+    labels:
+      - "oom.service.category=core"
+      - "oom.service.name=program-manager-service"
+      - "oom.service.type=management"
+
+  # Cognitive Processing Service
+  cognitive-processing-service:
+    build:
+      context: .
+      dockerfile: ./services/core/cognitive-processing-service/Dockerfile
+    container_name: oom-cognitive-processing
+    environment:
+      SERVICE_NAME: cognitive-processing-service
+      POSTGRES_URL: postgresql://oom_user:oom_password@postgres:5432/oom_platform
+      REDIS_URL: redis://redis:6379/0
+      JAEGER_ENDPOINT: http://jaeger:14268/api/traces
+    ports:
+      - "4005:8001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - oom-network
+    labels:
+      - "oom.service.category=core"
+      - "oom.service.name=cognitive-processing-service"
+      - "oom.service.type=processing"
+
+  # Quality Assurance Service
+  quality-assurance-service:
+    build:
+      context: .
+      dockerfile: ./services/core/quality-assurance-service/Dockerfile
+    container_name: oom-quality-assurance
+    environment:
+      SERVICE_NAME: quality-assurance-service
+      POSTGRES_URL: postgresql://oom_user:oom_password@postgres:5432/oom_platform
+      REDIS_URL: redis://redis:6379/0
+      JAEGER_ENDPOINT: http://jaeger:14268/api/traces
+    ports:
+      - "4015:8001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - oom-network
+    labels:
+      - "oom.service.category=core"
+      - "oom.service.name=quality-assurance-service"
+      - "oom.service.type=quality"

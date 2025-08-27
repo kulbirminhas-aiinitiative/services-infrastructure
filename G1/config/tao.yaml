@@ -1,0 +1,94 @@
+api:
+  debug: false
+  host: 0.0.0.0
+  port: 8000
+  reload: false
+  workers: 1
+automl_engine:
+  config_data: {}
+  enabled: true
+  max_workers: 4
+  retry_attempts: 3
+  timeout: 30.0
+collaborator_engine:
+  config_data: {}
+  enabled: true
+  max_workers: 4
+  retry_attempts: 3
+  timeout: 30.0
+critic_engine:
+  config_data: {}
+  enabled: true
+  max_workers: 4
+  retry_attempts: 3
+  timeout: 30.0
+database:
+  database: tao
+  host: localhost
+  password: ''
+  pool_size: 10
+  port: 5432
+  username: tao_user
+debug: true
+environment: development
+innovator_engine:
+  config_data: {}
+  enabled: true
+  max_workers: 4
+  retry_attempts: 3
+  timeout: 30.0
+learning_engine:
+  config_data: {}
+  enabled: true
+  max_workers: 4
+  retry_attempts: 3
+  timeout: 30.0
+logging:
+  format: '{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}'
+  level: INFO
+  log_dir: logs
+  retention: 7 days
+  rotation: 100 MB
+meta_engine:
+  config_data: {}
+  enabled: true
+  max_workers: 4
+  retry_attempts: 3
+  timeout: 30.0
+mind_engine:
+  config_data: {}
+  enabled: true
+  max_workers: 4
+  retry_attempts: 3
+  timeout: 30.0
+program_manager:
+  config_data: {}
+  enabled: true
+  max_workers: 4
+  retry_attempts: 3
+  timeout: 30.0
+redis:
+  database: 0
+  host: localhost
+  max_connections: 20
+  password: ''
+  port: 6379
+requirement_concierge:
+  config_data: {}
+  enabled: true
+  max_workers: 4
+  retry_attempts: 3
+  timeout: 30.0
+rlhf_engine:
+  config_data: {}
+  enabled: true
+  max_workers: 4
+  retry_attempts: 3
+  timeout: 30.0
+secret_key: ''
+solution_framework:
+  config_data: {}
+  enabled: true
+  max_workers: 4
+  retry_attempts: 3
+  timeout: 30.0

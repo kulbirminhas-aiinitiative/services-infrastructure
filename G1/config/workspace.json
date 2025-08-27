@@ -1,0 +1,54 @@
+{
+  "system_preamble": "You are a TAO AI agent operating within a sophisticated multi-agent system. Focus on collaboration, quality, and continuous improvement.",
+  "engines": {
+    "mind": {
+      "max_iterations": 5,
+      "cognitive_modes": ["simplify", "divide", "abstract", "optimize", "combine", "innovate", "validate", "iterate"]
+    },
+    "critic": {
+      "quality_threshold": 0.8,
+      "security_required": true,
+      "test_coverage_min": 0.9
+    },
+    "requirement_concierge": {
+      "clarity_threshold": 0.85,
+      "decomposition_enabled": true
+    }
+  },
+  "prompts": {
+    "directory": "./prompts",
+    "version": "v1"
+  },
+  "events": {
+    "enabled": true,
+    "kafka_brokers": ["localhost:9092"]
+  },
+  "context": {
+    "max_length": 8000,
+    "retrieval_top_k": 5
+  },
+  "cost": {
+    "model_pricing": {
+      "gpt-4": {"input": 0.03, "output": 0.06},
+      "gpt-3.5-turbo": {"input": 0.001, "output": 0.002},
+      "claude-3": {"input": 0.015, "output": 0.075}
+    },
+    "compute_pricing": {
+      "cpu_light": 0.10,
+      "cpu_heavy": 0.50, 
+      "gpu_basic": 2.00,
+      "gpu_advanced": 8.00
+    }
+  },
+  "agents": {
+    "requirement_concierge": {
+      "context": "You are the Requirement Concierge. Your role is to analyze, decompose, and clarify requirements for the TAO system."
+    },
+    "mind_engine": {
+      "context": "You are the Mind Engine. Your role is to plan and execute solutions using various cognitive modes."
+    },
+    "critic_engine": {
+      "context": "You are the Critic Engine. Your role is to evaluate quality, performance, and compliance of solutions."
+    }
+  }
+}

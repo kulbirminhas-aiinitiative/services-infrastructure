@@ -1,0 +1,554 @@
+name: G1 Comprehensive Testing Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run comprehensive tests every day at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test_level:
+        description: 'Test level to run'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - unit
+          - integration
+          - e2e
+          - performance
+          - security
+          - full
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - staging
+          - production
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  setup:
+    name: Test Environment Setup
+    runs-on: ubuntu-latest
+    outputs:
+      test-matrix: ${{ steps.matrix.outputs.matrix }}
+      test-level: ${{ steps.inputs.outputs.level }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Determine test level
+      id: inputs
+      run: |
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          echo "level=${{ inputs.test_level }}" >> $GITHUB_OUTPUT
+        elif [[ "${{ github.event_name }}" == "schedule" ]]; then
+          echo "level=full" >> $GITHUB_OUTPUT
+        else
+          echo "level=integration" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Setup test matrix
+      id: matrix
+      run: |
+        case "${{ steps.inputs.outputs.level }}" in
+          "unit")
+            echo 'matrix=["unit"]' >> $GITHUB_OUTPUT
+            ;;
+          "integration")
+            echo 'matrix=["unit", "integration"]' >> $GITHUB_OUTPUT
+            ;;
+          "e2e")
+            echo 'matrix=["unit", "integration", "e2e"]' >> $GITHUB_OUTPUT
+            ;;
+          "performance")
+            echo 'matrix=["unit", "integration", "performance"]' >> $GITHUB_OUTPUT
+            ;;
+          "security")
+            echo 'matrix=["unit", "security"]' >> $GITHUB_OUTPUT
+            ;;
+          "full")
+            echo 'matrix=["unit", "integration", "e2e", "performance", "security"]' >> $GITHUB_OUTPUT
+            ;;
+        esac
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: setup
+    if: contains(fromJson(needs.setup.outputs.test-matrix), 'unit')
+
+    strategy:
+      matrix:
+        test-group:
+          - mind-engine
+          - critic-engine
+          - meta-engine
+          - automl-engine
+          - learning-engine
+          - rlhf-engine
+          - innovator-engine
+          - collaborator-engine
+          - requirement-concierge
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio pytest-cov pytest-mock pytest-xdist
+
+    - name: Run unit tests for ${{ matrix.test-group }}
+      run: |
+        pytest tests/unit/test_${{ matrix.test-group }}.py -v \
+          --cov=src/tao/${{ matrix.test-group }} \
+          --cov-report=xml:coverage-${{ matrix.test-group }}.xml \
+          --cov-report=term-missing
+
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage-${{ matrix.test-group }}.xml
+        flags: unit-${{ matrix.test-group }}
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: setup
+    if: contains(fromJson(needs.setup.outputs.test-matrix), 'integration')
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: oom_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+      kafka:
+        image: confluentinc/cp-kafka:latest
+        env:
+          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        ports:
+          - 9092:9092
+
+      zookeeper:
+        image: confluentinc/cp-zookeeper:latest
+        env:
+          ZOOKEEPER_CLIENT_PORT: 2181
+          ZOOKEEPER_TICK_TIME: 2000
+        ports:
+          - 2181:2181
+
+    strategy:
+      matrix:
+        test-suite:
+          - engine-communication
+          - database-integration
+          - message-bus
+          - api-gateway
+          - authentication
+          - workflow-orchestration
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio pytest-cov
+
+    - name: Set up test environment
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        REDIS_URL: ${{ secrets.REDIS_URL }}
+        JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+        API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
+      run: |
+        echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/oom_test" >> $GITHUB_ENV
+        echo "REDIS_URL=redis://localhost:6379" >> $GITHUB_ENV
+        echo "KAFKA_BOOTSTRAP_SERVERS=localhost:9092" >> $GITHUB_ENV
+        echo "ENVIRONMENT=test" >> $GITHUB_ENV
+
+    - name: Wait for services
+      run: |
+        python scripts/wait_for_services.py --postgres --redis --kafka
+
+    - name: Run integration tests for ${{ matrix.test-suite }}
+      run: |
+        pytest tests/integration/test_${{ matrix.test-suite }}.py -v \
+          --cov=services \
+          --cov-report=xml:coverage-integration-${{ matrix.test-suite }}.xml
+
+    - name: Upload integration coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage-integration-${{ matrix.test-suite }}.xml
+        flags: integration-${{ matrix.test-suite }}
+
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    needs: [setup, unit-tests, integration-tests]
+    if: contains(fromJson(needs.setup.outputs.test-matrix), 'e2e')
+
+    strategy:
+      matrix:
+        scenario:
+          - full-ai-workflow
+          - requirement-to-solution
+          - mind-engine-patterns
+          - critic-evaluation
+          - learning-adaptation
+          - collaboration-workflow
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Set up test environment with secrets
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        REDIS_URL: ${{ secrets.REDIS_URL }}
+        JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+        API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
+        PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+      run: |
+        echo "Setting up E2E test environment for ${{ matrix.scenario }}"
+
+    - name: Start OOM System
+      run: |
+        docker-compose -f docker-compose.yml up -d
+        sleep 30  # Wait for services to start
+
+    - name: Wait for system readiness
+      run: |
+        python scripts/health_check.py --wait --timeout 300
+
+    - name: "Run E2E test scenario: ${{ matrix.scenario }}"
+      run: |
+        pytest tests/end_to_end/test_${{ matrix.scenario }}.py -v \
+          --tb=short \
+          --capture=no
+
+    - name: Collect system logs
+      if: always()
+      run: |
+        mkdir -p test-artifacts/logs
+        docker-compose logs > test-artifacts/logs/docker-compose-${{ matrix.scenario }}.log
+
+    - name: Upload test artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: e2e-artifacts-${{ matrix.scenario }}
+        path: test-artifacts/
+
+    - name: Cleanup
+      if: always()
+      run: |
+        docker-compose down -v
+
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: setup
+    if: contains(fromJson(needs.setup.outputs.test-matrix), 'performance')
+
+    strategy:
+      matrix:
+        test-type:
+          - load-testing
+          - stress-testing
+          - volume-testing
+          - latency-testing
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js for k6
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install k6
+      run: |
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+        echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+        sudo apt-get update
+        sudo apt-get install k6
+
+    - name: Start OOM System
+      run: |
+        docker-compose up -d
+        python scripts/health_check.py --wait --timeout 300
+
+    - name: Run performance tests
+      run: |
+        k6 run tests/performance/${{ matrix.test-type }}.js \
+          --out json=performance-results-${{ matrix.test-type }}.json
+
+    - name: Upload performance results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-results-${{ matrix.test-type }}
+        path: performance-results-${{ matrix.test-type }}.json
+
+    - name: Cleanup
+      if: always()
+      run: docker-compose down -v
+
+  security-tests:
+    name: Security Tests
+    runs-on: ubuntu-latest
+    needs: setup
+    if: contains(fromJson(needs.setup.outputs.test-matrix), 'security')
+
+    strategy:
+      matrix:
+        security-test:
+          - vulnerability-scan
+          - dependency-check
+          - secret-scan
+          - api-security
+          - container-security
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      if: matrix.security-test == 'vulnerability-scan'
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Run dependency check
+      if: matrix.security-test == 'dependency-check'
+      run: |
+        pip install safety
+        safety check --json --output safety-results.json || true
+
+    - name: Run secret scan
+      if: matrix.security-test == 'secret-scan'
+      run: |
+        pip install detect-secrets
+        detect-secrets scan --all-files --baseline .secrets.baseline
+
+    - name: API Security Testing
+      if: matrix.security-test == 'api-security'
+      run: |
+        docker-compose up -d api-gateway
+        python scripts/health_check.py --component api-gateway --wait
+
+        # Run OWASP ZAP API security tests
+        docker run -v $(pwd):/zap/wrk/:rw \
+          -t owasp/zap2docker-stable zap-api-scan.py \
+          -t http://host.docker.internal:8000/openapi.json \
+          -f openapi -r api-security-report.html
+
+    - name: Container Security Scan
+      if: matrix.security-test == 'container-security'
+      run: |
+        docker build -t oom-test .
+        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+          -v $(pwd):/tmp aquasec/trivy image oom-test
+
+    - name: Upload security results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-results-${{ matrix.security-test }}
+        path: |
+          trivy-results.sarif
+          safety-results.json
+          api-security-report.html
+          .secrets.baseline
+
+  mock-services-validation:
+    name: Mock Services Validation
+    runs-on: ubuntu-latest
+    needs: setup
+    if: contains(fromJson(needs.setup.outputs.test-matrix), 'integration')
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio
+
+    - name: Validate mock services
+      run: |
+        # Test that mock services work correctly
+        pytest tests/mocks/ -v
+
+        # Test failover to mock services
+        MOCK_EXTERNAL_SERVICES=true pytest tests/integration/test_external_fallback.py -v
+
+    - name: Test AI service mocks
+      env:
+        MOCK_EXTERNAL_SERVICES: "true"
+      run: |
+        python tests/mocks/test_ai_service_mocks.py
+
+  chaos-engineering:
+    name: Chaos Engineering Tests
+    runs-on: ubuntu-latest
+    needs: [setup, integration-tests]
+    if: contains(fromJson(needs.setup.outputs.test-matrix), 'full')
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Chaos Toolkit
+      run: |
+        pip install chaostoolkit chaostoolkit-kubernetes
+
+    - name: Start OOM System
+      run: |
+        docker-compose up -d
+        python scripts/health_check.py --wait --timeout 300
+
+    - name: Run chaos experiments
+      run: |
+        # Network partition test
+        chaos run tests/chaos/network-partition.yaml
+
+        # Service failure test
+        chaos run tests/chaos/service-failure.yaml
+
+        # Resource exhaustion test
+        chaos run tests/chaos/resource-exhaustion.yaml
+
+    - name: Cleanup
+      if: always()
+      run: docker-compose down -v
+
+  test-summary:
+    name: Test Summary Report
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, e2e-tests, performance-tests, security-tests]
+    if: always()
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+
+    - name: Generate test summary
+      run: |
+        python scripts/generate_test_summary.py \
+          --results-dir . \
+          --output test-summary.md
+
+    - name: Upload test summary
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-summary
+        path: test-summary.md
+
+    - name: Post summary to PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const summary = fs.readFileSync('test-summary.md', 'utf8');
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: summary
+          });
+
+  notify:
+    name: Notification
+    runs-on: ubuntu-latest
+    needs: [test-summary]
+    if: always()
+
+    steps:
+    - name: Notify Slack
+      if: env.SLACK_WEBHOOK_URL
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      run: |
+        curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"OOM System Test Suite Completed: ${{ needs.test-summary.result }}"}' \
+          $SLACK_WEBHOOK_URL

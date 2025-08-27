@@ -1,0 +1,79 @@
+# GitHub Actions Workflow Example for AI Manager
+# This demonstrates how to use GitHub repository secrets with the AI Manager service
+
+name: AI Manager Service Test
+
+on:
+  push:
+    branches: [main]
+    paths: 
+      - 'microservices/ai-services/ai-manager/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'microservices/ai-services/ai-manager/**'
+
+jobs:
+  test-ai-manager:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      working-directory: microservices/ai-services/ai-manager
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-custom.txt
+        
+    - name: Test AI Manager with GitHub Secrets
+      working-directory: microservices/ai-services/ai-manager
+      env:
+        # GitHub repository secret
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        PORT: 8002
+        RAG_ENGINE_URL: http://localhost:8003
+      run: |
+        # Start the service in background
+        python main.py &
+        SERVICE_PID=$!
+        
+        # Wait for service to start
+        sleep 5
+        
+        # Test health endpoint
+        curl -f http://localhost:8002/health
+        
+        # Test providers endpoint
+        curl -f http://localhost:8002/ai/providers
+        
+        # Stop the service
+        kill $SERVICE_PID
+        
+    - name: Test without OpenAI key (graceful degradation)
+      working-directory: microservices/ai-services/ai-manager
+      env:
+        PORT: 8002
+        # No OPENAI_API_KEY set
+      run: |
+        # Start the service in background
+        python main.py &
+        SERVICE_PID=$!
+        
+        # Wait for service to start
+        sleep 5
+        
+        # Test that service still works without OpenAI
+        curl -f http://localhost:8002/health
+        
+        # Verify OpenAI is marked as unavailable
+        curl http://localhost:8002/health | grep '"openai_enabled": false'
+        
+        # Stop the service
+        kill $SERVICE_PID
